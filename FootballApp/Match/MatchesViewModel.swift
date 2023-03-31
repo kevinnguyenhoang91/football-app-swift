@@ -10,6 +10,8 @@ import Combine
 
 public class MatchesViewModel: NSObject {
     @Published private(set) var matches: Matches?
+    @Published private(set) var previousMatchViewModels: [MatchViewModel]?
+    @Published private(set) var upcomingMatchViewModels: [MatchViewModel]?
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -21,6 +23,14 @@ public class MatchesViewModel: NSObject {
         MatchAPI.shared.getMatches()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] matches in
+                self?.previousMatchViewModels = []
+                for match in matches.previous {
+                    self?.previousMatchViewModels?.append(MatchViewModel(with: match))
+                }
+                self?.upcomingMatchViewModels = []
+                for match in matches.upcoming {
+                    self?.upcomingMatchViewModels?.append(MatchViewModel(with: match))
+                }
                 self?.matches = matches
             })
             .store(in: &cancellables)
@@ -29,13 +39,9 @@ public class MatchesViewModel: NSObject {
 
 public class MatchViewModel: NSObject {
     @Published private(set) var match: Match?
-    @Published private(set) var homeTeam: Team?
-    @Published private(set) var awayTeam: Team?
 
-    public required init(with match: Match?, homeTeam: Team?, awayTeam: Team?) {
+    public required init(with match: Match?) {
         super.init()
         self.match = match
-        self.homeTeam = homeTeam
-        self.awayTeam = awayTeam
     }
 }

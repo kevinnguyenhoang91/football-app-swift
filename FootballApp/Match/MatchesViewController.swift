@@ -44,8 +44,7 @@ public class MatchesViewController: UICollectionViewController {
         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
-        collectionView.register(PreviousMatchCell.self, forCellWithReuseIdentifier: "PreviousMatchCell")
-        collectionView.register(UpcomingMatchCell.self, forCellWithReuseIdentifier: "UpcomingMatchCell")
+        collectionView.register(MatchCell.self, forCellWithReuseIdentifier: "MatchCell")
         
         matchesViewModel.$matches
             .receive(on: DispatchQueue.main)
@@ -75,36 +74,34 @@ public class MatchesViewController: UICollectionViewController {
     public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            return matchesViewModel.matches?.upcoming.count ?? 0
+            return matchesViewModel.upcomingMatchViewModels?.count ?? 0
         case 1:
-            return matchesViewModel.matches?.previous.count ?? 0
+            return matchesViewModel.previousMatchViewModels?.count ?? 0
         default:
             return 0
         }
     }
     
     public override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        switch segmentedControl.selectedSegmentIndex {
-        case 0:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UpcomingMatchCell", for: indexPath)
-            
-            if let matchCell = cell as? UpcomingMatchCell,
-               let match = matchesViewModel.matches?.upcoming[indexPath.row] {
-                matchCell.configure(with: match, teams: teamsViewModel.teams)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MatchCell", for: indexPath)
+        if let cell = cell as? MatchCell {
+            var matchViewModel: MatchViewModel?
+            switch segmentedControl.selectedSegmentIndex {
+            case 0:
+                matchViewModel = matchesViewModel.upcomingMatchViewModels?[indexPath.row]
+                break
+            case 1:
+                matchViewModel = matchesViewModel.previousMatchViewModels?[indexPath.row]
+                break
+            default:
+                break
             }
-            return cell
-        case 1:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PreviousMatchCell", for: indexPath)
             
-            if let matchCell = cell as? PreviousMatchCell,
-               let match = matchesViewModel.matches?.previous[indexPath.row] {
-                matchCell.configure(with: match, teams: teamsViewModel.teams)
+            if let matchViewModel = matchViewModel {
+                cell.configure(with: matchViewModel, teamsViewModel: teamsViewModel)
             }
-            return cell
-        
-        default:
-            return UICollectionViewCell()
         }
+        return cell
     }
 }
 

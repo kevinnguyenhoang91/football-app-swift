@@ -26,8 +26,8 @@ public struct Team: Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
-        name = try container.decode(String.self, forKey: .name)
+        id = try container.decode(String.self, forKey: .id).trimmingCharacters(in: .whitespacesAndNewlines)
+        name = try container.decode(String.self, forKey: .name).trimmingCharacters(in: .whitespacesAndNewlines)
         logo = try? container.decode(URL.self, forKey: .logo)
     }
     

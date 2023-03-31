@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C6253FB29D6E2EA007B5F8B /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 1C6253FA29D6E2EA007B5F8B /* SnapshotTesting */; };
 		1C8AE52029D581F500A3989B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AE51F29D581F500A3989B /* AppDelegate.swift */; };
 		1C8AE52229D581F500A3989B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AE52129D581F500A3989B /* SceneDelegate.swift */; };
 		1C8AE52429D581F500A3989B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AE52329D581F500A3989B /* ViewController.swift */; };
@@ -87,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C6253FB29D6E2EA007B5F8B /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +225,9 @@
 				1C8AE53729D581F700A3989B /* PBXTargetDependency */,
 			);
 			name = FootballAppTests;
+			packageProductDependencies = (
+				1C6253FA29D6E2EA007B5F8B /* SnapshotTesting */,
+			);
 			productName = FootballAppTests;
 			productReference = 1C8AE53529D581F700A3989B /* FootballAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -279,6 +284,7 @@
 			mainGroup = 1C8AE51329D581F500A3989B;
 			packageReferences = (
 				1CA5F2C629D68F45009F9A46 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				1C6253F929D6E2EA007B5F8B /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			productRefGroup = 1C8AE51D29D581F500A3989B /* Products */;
 			projectDirPath = "";
@@ -690,6 +696,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1C6253F929D6E2EA007B5F8B /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.9.0;
+			};
+		};
 		1CA5F2C629D68F45009F9A46 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -701,6 +715,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1C6253FA29D6E2EA007B5F8B /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C6253F929D6E2EA007B5F8B /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
 		1CA5F2C729D68F45009F9A46 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1CA5F2C629D68F45009F9A46 /* XCRemoteSwiftPackageReference "SDWebImage" */;

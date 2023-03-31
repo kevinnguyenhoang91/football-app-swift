@@ -35,13 +35,13 @@ public struct Match: Codable {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        description = try container.decode(String.self, forKey: .description)
-        home = try container.decode(String.self, forKey: .home)
-        away = try container.decode(String.self, forKey: .away)
-        winner = try? container.decode(String.self, forKey: .winner)
+        description = try container.decode(String.self, forKey: .description).trimmingCharacters(in: .whitespacesAndNewlines)
+        home = try container.decode(String.self, forKey: .home).trimmingCharacters(in: .whitespacesAndNewlines)
+        away = try container.decode(String.self, forKey: .away).trimmingCharacters(in: .whitespacesAndNewlines)
+        winner = try? container.decode(String.self, forKey: .winner).trimmingCharacters(in: .whitespacesAndNewlines)
         highlights = try? container.decode(URL.self, forKey: .highlights)
 
-        let dateString = try container.decode(String.self, forKey: .date)
+        let dateString = try container.decode(String.self, forKey: .date).trimmingCharacters(in: .whitespacesAndNewlines)
 
         let formatter = DateFormatter()
         formatter.dateFormat = Defines.dateFormatString

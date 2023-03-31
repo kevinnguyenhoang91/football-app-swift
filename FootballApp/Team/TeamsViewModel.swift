@@ -11,7 +11,8 @@ import UIKit
 
 public class TeamsViewModel: NSObject {
     @Published private(set) var teams: [Team]?
-    
+    @Published private(set) var teamViewModels: [TeamViewModel]?
+
     private var cancellables: Set<AnyCancellable> = []
     
     public override init() {
@@ -22,6 +23,10 @@ public class TeamsViewModel: NSObject {
         TeamAPI.shared.getTeams()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] teams in
+                self?.teamViewModels = []
+                for team in teams {
+                    self?.teamViewModels?.append(TeamViewModel(with: team))
+                }
                 self?.teams = teams
             })
             .store(in: &cancellables)
