@@ -27,7 +27,7 @@ fileprivate protocol InternalMatchableCell {
 
 public class MatchCell: UICollectionViewCell {
     
-    fileprivate var homeLogoImageView: UIImageView = {
+    fileprivate lazy var homeLogoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
@@ -39,7 +39,7 @@ public class MatchCell: UICollectionViewCell {
         return imageView
     }()
     
-    fileprivate var awayLogoImageView: UIImageView = {
+    fileprivate lazy var awayLogoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
@@ -51,7 +51,7 @@ public class MatchCell: UICollectionViewCell {
         return imageView
     }()
     
-    fileprivate var descriptionLabel: UILabel = {
+    fileprivate lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 18)
         label.textColor = .black
@@ -61,7 +61,7 @@ public class MatchCell: UICollectionViewCell {
         return label
     }()
     
-    fileprivate var vsLabel: UILabel = {
+    fileprivate lazy var vsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 18)
         label.textColor = .black
@@ -72,7 +72,7 @@ public class MatchCell: UICollectionViewCell {
         return label
     }()
     
-    fileprivate var dateLabel: UILabel = {
+    fileprivate lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = .gray
@@ -81,7 +81,7 @@ public class MatchCell: UICollectionViewCell {
         return label
     }()
     
-    fileprivate var glassImageView: UIImageView = {
+    fileprivate lazy var glassImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.alpha = 0.5

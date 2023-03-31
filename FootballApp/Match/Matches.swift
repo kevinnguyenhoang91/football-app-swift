@@ -66,6 +66,11 @@ public struct Match: Codable {
 public struct Matches: Codable {
     var previous: [Match]
     var upcoming: [Match]
+    
+    public init(previous: [Match], upcoming: [Match]) {
+        self.previous = previous
+        self.upcoming = upcoming
+    }
 }
 
 struct MatchesResponse: Codable {

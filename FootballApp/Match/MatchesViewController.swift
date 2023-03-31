@@ -12,13 +12,18 @@ import Combine
 
 public class MatchesViewController: UICollectionViewController {
     private var cancellables = Set<AnyCancellable>()
-    private var matchesViewModel = MatchesViewModel()
-    private var teamsViewModel = TeamsViewModel()
+    private var matchesViewModel = MatchesViewModel(context: Defines.context)
+    private var teamsViewModel = TeamsViewModel(context: Defines.context)
         
+    private var refreshControl = UIRefreshControl()
+    
     private let segmentedControl = UISegmentedControl(items: ["Upcoming", "Previous"])
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        collectionView.addSubview(refreshControl)
+        refreshControl.addTarget(self, action: #selector(refreshCollectionView), for: .valueChanged)
                 
         title = "Football Matches"
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
@@ -45,22 +50,15 @@ public class MatchesViewController: UICollectionViewController {
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         collectionView.register(MatchCell.self, forCellWithReuseIdentifier: "MatchCell")
-        
-        matchesViewModel.$matches
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.collectionView.reloadData()
-            }
-            .store(in: &cancellables)
-        
-        teamsViewModel.$teams
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.matchesViewModel.fetchMatches()
-            }
-            .store(in: &cancellables)
-        
-        teamsViewModel.fetchTeams()
+        matchesViewModel.fetchMatchesFromCoreData()
+        teamsViewModel.fetchTeamsFromCoreData()
+        collectionView.reloadData()
+    }
+    
+    @objc func refreshCollectionView() {
+        // Perform any necessary data fetching or reloading here
+        collectionView.reloadData()
+        refreshControl.endRefreshing()
     }
     
     @objc public func segmentedControlValueChanged(_ sender: UISegmentedControl) {
