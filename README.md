@@ -15,9 +15,9 @@ Build an iOS football app that shows matches and highlights.
 
 • Use UIKit and Combine (functional reactive programming). ✅
 • Build the entire project’s UI programmatically. ✅
-• Present lists using collection view diffable data source. ⌛
+• Present lists using collection view diffable data source. ✅
 • Following MVVM design pattern, discern files using the feature-first approach. ✅
-• Integrate Core Data to sync matches and teams for offline access. ⌛
+• Integrate Core Data to sync matches and teams for offline access. ✅
 • Conform to API Design Guidelines (https://bit.ly/3ZqnUXO). ⌛
 • Conform to Swift Style Guide (https://bit.ly/3YicMuO). ⌛
 
@@ -27,7 +27,7 @@ Build an iOS football app that shows matches and highlights.
 • Integrate unit testing bundle with appropriate unit tests for code coverage. ⌛
 • Integrate unit testing bundle with snapshot tests for UI components comparisons. ⌛
 • Integrate UI testing bundle with appropriate UI tests to simulate user interactions. ⌛
-• Limit third-party dependencies (zero is the best). (2 dependencies: `SDWebImage`, `SnapshotTesting`) ⌛
+• Limit third-party dependencies (zero is the best). (Current: 2 dependencies: `SDWebImage`, `SnapshotTesting`) ⌛
 
 ### Backend APIs
 

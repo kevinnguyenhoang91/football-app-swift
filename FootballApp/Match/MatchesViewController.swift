@@ -11,8 +11,19 @@ import Combine
 
 public class MatchesViewController: UICollectionViewController {
     private var cancellables = Set<AnyCancellable>()
+    private var searchCancellables: AnyCancellable?
+
     private var matchesViewModel = MatchesViewModel(context: Defines.context)
     private var teamsViewModel = TeamsViewModel(context: Defines.context)
+    
+    private let searchBar = UISearchBar()
+
+    private func setupSearchBar() {
+        searchBar.delegate = self
+        searchBar.sizeToFit()
+        collectionView.keyboardDismissMode = .onDrag
+        navigationItem.titleView = searchBar
+    }
 
     private var refreshControl = UIRefreshControl()
     private let segmentedControl = UISegmentedControl(items: ["Upcoming", "Previous"])
@@ -21,6 +32,8 @@ public class MatchesViewController: UICollectionViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupSearchBar()
 
         collectionView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshCollectionView), for: .valueChanged)
@@ -52,7 +65,7 @@ public class MatchesViewController: UICollectionViewController {
 
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
         segmentedControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+        segmentedControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 120).isActive = true
         segmentedControl.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         segmentedControl.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
@@ -69,7 +82,11 @@ public class MatchesViewController: UICollectionViewController {
         matchesViewModel.$matches
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.updateData()
+                if let search = self?.searchBar.text {
+                    self?.filterMatches(searchText: search)
+                } else {
+                    self?.updateData()
+                }
             }
             .store(in: &cancellables)
     }
@@ -97,7 +114,11 @@ public class MatchesViewController: UICollectionViewController {
     }
 
     @objc public func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        updateData()
+        if let search = searchBar.text {
+            filterMatches(searchText: search)
+        } else {
+            updateData()
+        }
     }
 
     public override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -120,5 +141,60 @@ extension MatchesViewController: UICollectionViewDelegateFlowLayout {
 
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10
+    }
+}
+
+extension MatchesViewController: UISearchBarDelegate {
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        searchCancellables = Just(searchText)
+            .throttle(for: .milliseconds(1000), scheduler: RunLoop.main, latest: true)
+            .removeDuplicates()
+            .sink { [weak self] in
+                self?.filterMatches(searchText: $0)
+            }
+    }
+    
+    private func filterMatches(searchText: String) {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, MatchViewModel>()
+        snapshot.appendSections([0])
+        switch self.segmentedControl.selectedSegmentIndex {
+        case 0:
+            if searchText.isEmpty {
+                snapshot.appendItems(self.matchesViewModel.upcomingMatchViewModels ?? [])
+            } else {
+                let upcomingMatches = self.matchesViewModel.upcomingMatchViewModels ?? []
+                let filteredMatches = upcomingMatches.filter { match in
+                    if let homeTeam = match.match?.home,
+                       let awayTeam = match.match?.away {
+                        return homeTeam.lowercased().contains(searchText.lowercased()) ||
+                            awayTeam.lowercased().contains(searchText.lowercased())
+                    } else {
+                        return false
+                    }
+                }
+                snapshot.appendItems(filteredMatches)
+            }
+            break
+        case 1:
+            if searchText.isEmpty {
+                snapshot.appendItems(self.matchesViewModel.previousMatchViewModels ?? [])
+            } else {
+                let previousMatches = self.matchesViewModel.previousMatchViewModels ?? []
+                let filteredMatches = previousMatches.filter { match in
+                    if let homeTeam = match.match?.home,
+                       let awayTeam = match.match?.away {
+                        return homeTeam.lowercased().contains(searchText.lowercased()) ||
+                        awayTeam.lowercased().contains(searchText.lowercased())
+                    } else {
+                        return false
+                    }
+                }
+                snapshot.appendItems(filteredMatches)
+            }
+            break
+        default:
+            break
+        }
+        self.dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
