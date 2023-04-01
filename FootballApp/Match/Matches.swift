@@ -7,14 +7,14 @@
 
 import Foundation
 
-public struct Match: Codable {
+public struct Match: Codable, Hashable {
     var date: Date
     var description: String
     var home: String
     var away: String
     var winner: String?
     var highlights: URL?
-    
+
     enum CodingKeys: String, CodingKey {
         case description
         case date
@@ -23,7 +23,7 @@ public struct Match: Codable {
         case winner
         case highlights
     }
-    
+
     public init(description: String, date: Date, home: String, away: String, winner: String?, highlights: URL?) {
         self.description = description
         self.date = date
@@ -32,7 +32,7 @@ public struct Match: Codable {
         self.winner = winner
         self.highlights = highlights
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         description = try container.decode(String.self, forKey: .description).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -47,7 +47,7 @@ public struct Match: Codable {
         formatter.dateFormat = Defines.dateFormatString
         date = formatter.date(from: dateString) ?? Date()
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(description, forKey: .description)
@@ -55,18 +55,27 @@ public struct Match: Codable {
         try container.encode(away, forKey: .away)
         try? container.encode(winner, forKey: .winner)
         try? container.encode(highlights, forKey: .highlights)
-        
+
         let formatter = DateFormatter()
         formatter.dateFormat = Defines.dateFormatString
         let dateString = formatter.string(from: date)
         try container.encode(dateString, forKey: .date)
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(description)
+        hasher.combine(home)
+        hasher.combine(away)
+        hasher.combine(winner)
+        hasher.combine(highlights)
+        hasher.combine(date)
     }
 }
 
 public struct Matches: Codable {
     var previous: [Match]
     var upcoming: [Match]
-    
+
     public init(previous: [Match], upcoming: [Match]) {
         self.previous = previous
         self.upcoming = upcoming

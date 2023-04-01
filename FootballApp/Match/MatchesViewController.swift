@@ -9,28 +9,41 @@ import Foundation
 import UIKit
 import Combine
 
-
 public class MatchesViewController: UICollectionViewController {
     private var cancellables = Set<AnyCancellable>()
     private var matchesViewModel = MatchesViewModel(context: Defines.context)
     private var teamsViewModel = TeamsViewModel(context: Defines.context)
-        
+
     private var refreshControl = UIRefreshControl()
-    
     private let segmentedControl = UISegmentedControl(items: ["Upcoming", "Previous"])
-    
+
+    private var dataSource: UICollectionViewDiffableDataSource<Int, MatchViewModel>!
+
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         collectionView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshCollectionView), for: .valueChanged)
-                
+
         title = "Football Matches"
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-        
+
         collectionView.backgroundColor = .clear
         view.backgroundColor = .white
-        
+
+        dataSource = UICollectionViewDiffableDataSource<Int, MatchViewModel>(collectionView: collectionView) { [weak self] collectionView, indexPath, item in
+
+            guard let self = self else { return UICollectionViewCell() }
+
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MatchCell", for: indexPath)
+            if let cell = cell as? MatchCell {
+                DispatchQueue.main.async {
+                    cell.configure(with: item, teamsViewModel: self.teamsViewModel)
+                }
+            }
+            return cell
+        }
+
         view.addSubview(segmentedControl)
         segmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         segmentedControl.selectedSegmentIndex = 0
@@ -52,54 +65,43 @@ public class MatchesViewController: UICollectionViewController {
         collectionView.register(MatchCell.self, forCellWithReuseIdentifier: "MatchCell")
         matchesViewModel.fetchMatchesFromCoreData()
         teamsViewModel.fetchTeamsFromCoreData()
-        collectionView.reloadData()
+        
+        matchesViewModel.$matches
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateData()
+            }
+            .store(in: &cancellables)
     }
     
+    private func updateData() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, MatchViewModel>()
+        snapshot.appendSections([0])
+        switch self.segmentedControl.selectedSegmentIndex {
+        case 0:
+            snapshot.appendItems(self.matchesViewModel.upcomingMatchViewModels ?? [])
+            break
+        case 1:
+            snapshot.appendItems(self.matchesViewModel.previousMatchViewModels ?? [])
+            break
+        default:
+            break
+        }
+        self.dataSource.apply(snapshot, animatingDifferences: true)
+    }
+
     @objc func refreshCollectionView() {
-        // Perform any necessary data fetching or reloading here
-        collectionView.reloadData()
+        matchesViewModel.fetchMatches()
+        teamsViewModel.fetchTeams()
         refreshControl.endRefreshing()
     }
-    
+
     @objc public func segmentedControlValueChanged(_ sender: UISegmentedControl) {
-        collectionView.reloadData()
+        updateData()
     }
-    
+
     public override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
-    }
-    
-    public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch segmentedControl.selectedSegmentIndex {
-        case 0:
-            return matchesViewModel.upcomingMatchViewModels?.count ?? 0
-        case 1:
-            return matchesViewModel.previousMatchViewModels?.count ?? 0
-        default:
-            return 0
-        }
-    }
-    
-    public override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MatchCell", for: indexPath)
-        if let cell = cell as? MatchCell {
-            var matchViewModel: MatchViewModel?
-            switch segmentedControl.selectedSegmentIndex {
-            case 0:
-                matchViewModel = matchesViewModel.upcomingMatchViewModels?[indexPath.row]
-                break
-            case 1:
-                matchViewModel = matchesViewModel.previousMatchViewModels?[indexPath.row]
-                break
-            default:
-                break
-            }
-            
-            if let matchViewModel = matchViewModel {
-                cell.configure(with: matchViewModel, teamsViewModel: teamsViewModel)
-            }
-        }
-        return cell
     }
 }
 
@@ -107,15 +109,15 @@ extension MatchesViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width - 20, height: 0)
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }

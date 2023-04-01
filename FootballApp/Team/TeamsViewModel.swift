@@ -10,7 +10,7 @@ import Combine
 import UIKit
 import CoreData
 
-public class TeamsViewModel: NSObject {
+public class TeamsViewModel {
     @Published private(set) var teams: [Team]?
     @Published private(set) var teamViewModels: [TeamViewModel]?
     
@@ -20,7 +20,6 @@ public class TeamsViewModel: NSObject {
     
     init(context: NSManagedObjectContext) {
         self.context = context
-        super.init()
     }
     
     public func fetchTeamsFromCoreData() {
@@ -34,6 +33,7 @@ public class TeamsViewModel: NSObject {
                 for team in teams {
                     teamViewModels?.append(TeamViewModel(with: team))
                 }
+                if teams.isEmpty { fetchTeams() }
             }
         } catch {
             print("Error fetching teams from Core Data: \(error)")
@@ -83,11 +83,10 @@ public class TeamsViewModel: NSObject {
     }
 }
 
-public class TeamViewModel: NSObject {
+public class TeamViewModel {
     @Published private(set) var team: Team?
 
     public required init(with team: Team?) {
-        super.init()
         self.team = team
     }
 }

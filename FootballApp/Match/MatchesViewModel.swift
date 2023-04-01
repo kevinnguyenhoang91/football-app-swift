@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import CoreData
 
-public class MatchesViewModel: NSObject {
+public class MatchesViewModel {
     @Published private(set) var matches: Matches?
     @Published private(set) var previousMatchViewModels: [MatchViewModel]?
     @Published private(set) var upcomingMatchViewModels: [MatchViewModel]?
@@ -20,7 +20,6 @@ public class MatchesViewModel: NSObject {
     
     init(context: NSManagedObjectContext) {
         self.context = context
-        super.init()
     }
     
     public func fetchMatchesFromCoreData() {
@@ -31,7 +30,7 @@ public class MatchesViewModel: NSObject {
             let upcomingMatches = upcomingMatchEntities.map { Match(description: $0.desc!, date: $0.date!, home: $0.home!, away: $0.away!, winner: $0.winner, highlights: $0.highlights) }
             let previousMatchEntities = try context.fetch(fetchPreviousRequest)
             let previousMatches = previousMatchEntities.map { Match(description: $0.desc!, date: $0.date!, home: $0.home!, away: $0.away!, winner: $0.winner, highlights: $0.highlights) }
-            
+                
             matches = Matches(previous: previousMatches, upcoming: upcomingMatches)
             
             if let matches = matches {
@@ -44,6 +43,8 @@ public class MatchesViewModel: NSObject {
                     upcomingMatchViewModels?.append(MatchViewModel(with: match))
                 }
             }
+            
+            if upcomingMatches.isEmpty || previousMatches.isEmpty { fetchMatches() }
         } catch {
             print("Error fetching teams from Core Data: \(error)")
         }
@@ -115,11 +116,20 @@ public class MatchesViewModel: NSObject {
     }
 }
 
-public class MatchViewModel: NSObject {
+public class MatchViewModel {
     @Published private(set) var match: Match?
 
     public required init(with match: Match?) {
-        super.init()
         self.match = match
+    }
+}
+
+extension MatchViewModel: Hashable {
+    public static func == (lhs: MatchViewModel, rhs: MatchViewModel) -> Bool {
+        return lhs.match == rhs.match
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        match?.hash(into: &hasher)
     }
 }
