@@ -7,8 +7,8 @@ Build an iOS football app that shows matches and highlights.
 ### Functional Requirements
 
 • Display previous and upcoming matches. ✅
-• Select a team for team details. ✅ (💯 Nice to have: Separate TeamDetailViewController instead of presenting AlertController)
-• Filter matches by team(s). ⌛
+• Select a team for team details. ✅ (💡 Nice to have: Separate TeamDetailViewController instead of presenting AlertController)
+• Filter matches by team(s). ✅
 • Watch highlights of a previous match. ⌛
 
 ### Coding Requirements
@@ -27,7 +27,7 @@ Build an iOS football app that shows matches and highlights.
 • Integrate unit testing bundle with appropriate unit tests for code coverage. ⌛
 • Integrate unit testing bundle with snapshot tests for UI components comparisons. ⌛
 • Integrate UI testing bundle with appropriate UI tests to simulate user interactions. ⌛
-• Limit third-party dependencies (zero is the best). (Current: 2 dependencies: `SDWebImage`, `SnapshotTesting`) ⌛
+• Limit third-party dependencies (zero is the best). (Current: 2 dependencies: `SDWebImage`, `SnapshotTesting`) ❌
 
 ### Backend APIs
 
