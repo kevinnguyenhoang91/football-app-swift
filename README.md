@@ -38,7 +38,7 @@ Get Matches https://jmde6xvjr4.execute-api.us-east-1.amazonaws.com/teams/matches
 
 • Create a README.md in the project's directory. ✅
 • Add 2-3 GIFs to showcase your app UI and features. ✅
-• Describe any particularly challenging technical issue you faced while working on theiOS project, how you approached solving it, and what you learned from the experience.Expectations• Simple, elegant, and malleable solutions. ⌛
+• Describe any particularly challenging technical issue you faced while working on theiOS project, how you approached solving it, and what you learned from the experience.Expectations• Simple, elegant, and malleable solutions. ✅
 • Clean, readable, and organized code. ✅
 • Knowledge of modern Apple APIs. ✅
 
