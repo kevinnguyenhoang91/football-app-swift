@@ -174,25 +174,20 @@ extension MatchCell: MatchableCell {
     @objc public func handleTeamTap(_ sender: UITapGestureRecognizer) {
         guard let target = sender.view as? UIImageView,
               let _ = matchViewModel?.match,
-              let homeTeam = homeTeamViewModel?.team,
-              let awayTeam = awayTeamViewModel?.team  else {
+              let _ = homeTeamViewModel?.team,
+              let _ = awayTeamViewModel?.team  else {
             return
         }
-        
-        var name = homeTeam.name ?? ""
-        var id = homeTeam.id
+            
+        let teamVC = TeamDetailViewController()
+        teamVC.teamViewModel = homeTeamViewModel
         
         if target === awayLogoImageView {
-            name = awayTeam.name ?? ""
-            id = awayTeam.id
+            teamVC.teamViewModel = awayTeamViewModel
         }
         
-        let alertController = UIAlertController(title: "Team \(name)", message: "Name: \(name)\nID: \(id)", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Done", style: .default, handler: nil)
-        alertController.addAction(okAction)
-        
         if let viewController = UIApplication.shared.keyWindow?.rootViewController {
-            viewController.present(alertController, animated: true, completion: nil)
+            viewController.present(teamVC, animated: true, completion: nil)
         }
     }
 }

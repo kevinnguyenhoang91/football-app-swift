@@ -124,6 +124,14 @@ public class MatchesViewController: UICollectionViewController {
     public override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
+    
+    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let playerVC = WatchHighlightsViewController()
+        playerVC.matchViewModel = item
+        present(playerVC, animated: true)
+    }
 }
 
 extension MatchesViewController: UICollectionViewDelegateFlowLayout {
