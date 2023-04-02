@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import SDWebImage
+import FootballTeam
 
 public class TeamDetailViewController: UIViewController {
 

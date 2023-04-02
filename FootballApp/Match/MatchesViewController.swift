@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Combine
+import FootballMatch
 
 public class MatchesViewController: UICollectionViewController {
     private var cancellables = Set<AnyCancellable>()

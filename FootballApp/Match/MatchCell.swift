@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 import Combine
 import SDWebImage
+import FootballTeam
+import FootballMatch
 
 public protocol MatchableCell {
     func configure(with matchViewModel: MatchViewModel?, teamsViewModel: TeamsViewModel?)

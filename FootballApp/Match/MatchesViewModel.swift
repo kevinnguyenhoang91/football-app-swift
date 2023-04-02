@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import CoreData
+import FootballMatch
 
 public class MatchesViewModel {
     @Published private(set) var matches: Matches?
